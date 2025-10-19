@@ -3,6 +3,7 @@ services:
   app:
     image: {shamie11}/{students}:{tag}
     ports:
-      - "3030:3030" # Map port 3030 on the host to port 3030 in the container
+      - "8081:8081" # Map port 3030 on the host to port 3030 in the container
     environment:
       - NODE_ENV=production
+
