@@ -2,21 +2,24 @@ pipeline {
   agent any
   options { timestamps() }
 
+  environment {
+    PATH = "/opt/homebrew/bin:/usr/local/bin:${env.PATH}"
+  }
+
   stages {
     stage('Checkout') { steps { checkout scm } }
 
     stage('Setup Node.js') {
       steps {
         sh '''
-          export PATH="/opt/homebrew/opt/node@20/bin:/opt/homebrew/bin:$PATH"
           which node
-          node -v && npm -v
+          node -v
+          npm -v
         '''
       }
     }
 
     stage('Install Dependencies') { steps { sh 'npm ci' } }
-
     stage('Start Application') {
       steps {
         sh '''
@@ -27,14 +30,13 @@ pipeline {
         '''
       }
     }
-
     stage('Run Tests') { steps { sh 'npm test' } }
   }
 
   post {
     always {
       sh 'test -f app.pid && kill "$(cat app.pid)" || true'
-      archiveArtifacts artifacts: "app.log", allowEmptyArchive: true
+      archiveArtifacts artifacts: 'app.log', allowEmptyArchive: true
     }
   }
 }
